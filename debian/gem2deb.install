@@ -6,4 +6,4 @@ bin/gem2deb /usr/bin/
 bin/gem2tgz /usr/bin/ 
 bin/gen-ruby-trans-pkgs /usr/bin/
 debhelper/* /usr/share/perl5/
-lib/* /usr/lib/ruby/vendor_ruby/
+lib/gem2deb/vendor_ruby/* /usr/lib/ruby/vendor_ruby/
