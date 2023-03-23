@@ -1,3 +1,9 @@
+gem2deb (1.7-1deepin1) unstable; urgency=medium
+
+  * update install.
+
+ -- LiChengGang <lichenggang@uniontech.com>  Thu, 23 Mar 2023 11:22:35 +0800
+
 gem2deb (1.7) unstable; urgency=medium
 
   [ Antonio Terceiro ]
