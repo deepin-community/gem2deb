@@ -30,35 +30,116 @@ module Gem2Deb
     attr_accessor :verbose
     attr_accessor :installer_class
 
+    class LegacyStrategy
+      attr_reader :dh_ruby
+      def initialize(dh_ruby)
+        @dh_ruby = dh_ruby
+      end
+
+      def clean
+        # nothing
+      end
+
+      def build
+        # nothing
+      end
+
+      def test
+        # nothing
+      end
+
+      def install(dh_auto_install_destdir)
+        installers.each do |installer|
+          installer.destdir_base = destdir_for(installer.binary_package, dh_auto_install_destdir)
+          installer.build
+          installer.install
+        end
+        run_tests
+      end
+
+      protected
+
+      def installers
+        dh_ruby.send(:installers)
+      end
+
+      def destdir_for(package, destdir)
+        dh_ruby.send(:destdir_for, package, destdir)
+      end
+
+      def run_tests
+        dh_ruby.send(:run_tests)
+      end
+    end
+
+    class DebhelperCompat14Strategy < LegacyStrategy
+      def clean
+        FileUtils::Verbose.rm_rf dh_ruby.build_dir
+      end
+
+      def build
+        installers.each do |installer|
+          installer.destdir_base = destdir_for(installer.binary_package, nil)
+          installer.build
+        end
+      end
+
+      def test
+        run_tests
+      end
+
+      def install(dh_auto_install_destdir)
+        # copy from build dir into debian/
+        Dir[dh_ruby.build_dir + "/*"].each do |pkg|
+          FileUtils::Verbose.cp_r pkg, "debian"
+        end
+        installers.each do |installer|
+          installer.destdir_base = destdir_for(installer.binary_package, dh_auto_install_destdir)
+          installer.install
+        end
+      end
+    end
+
     def initialize
       @verbose = true
       @skip_checks = nil
       @installer_class = Gem2Deb::Installer
       @source = Gem2Deb::Source.new
+      @strategy =
+        if @source.debhelper_compat >= 14
+          DebhelperCompat14Strategy.new(self)
+        else
+          LegacyStrategy.new(self)
+        end
     end
 
     def clean
-      puts "   dh_ruby --clean" if @verbose
+      check_source_package
 
       make.clean
 
       installers.each do |installer|
         installer.clean
       end
+
+      @strategy.clean
     end
 
     def configure
-      # puts "   dh_ruby --configure" if @verbose
+    end
+
+    def build_dir
+      @source.build_dir
     end
 
     def build
-      puts "   dh_ruby --build" if @verbose
-
       make.build
+
+      @strategy.build
     end
 
     def test
-      # puts "   dh_ruby --test" if @verbose
+      @strategy.test
     end
 
     if File.exist? File.expand_path(File.join(File.dirname(__FILE__),'../../bin','gem2deb-test-runner'))
@@ -68,8 +149,6 @@ module Gem2Deb
     end
 
     def install(argv)
-      puts "   dh_ruby --install" if @verbose
-
       dh_auto_install_destdir = argv.first
 
       make.install(destdir_for(@source.packages.first[:binary_package], dh_auto_install_destdir))
@@ -81,12 +160,7 @@ module Gem2Deb
         end
       end
 
-      installers.each do |installer|
-        installer.destdir_base = destdir_for(installer.binary_package, dh_auto_install_destdir)
-        installer.install
-      end
-
-      run_tests
+      @strategy.install(dh_auto_install_destdir)
 
       Gem2Deb::Banner.print 'dh_ruby --install finished'
     end
@@ -174,23 +248,14 @@ module Gem2Deb
         end
     end
 
+    def check_source_package
+      if !File.readlines('debian/control').grep(/^XS-Ruby-Versions: /).empty?
+        puts "W: XS-Ruby-Versions is deprecated, and will be ignored"
+      end
+    end
+
     def ruby_versions
-      @ruby_versions ||=
-        begin
-          # find ruby versions to build the package for.
-          lines = File.readlines('debian/control').grep(/^XS-Ruby-Versions: /)
-          if lines.empty?
-            puts "No XS-Ruby-Versions: field found in source!" if @verbose
-            exit(1)
-          else
-            list = lines.first.split[1..-1]
-            if list.include?('all')
-              SUPPORTED_RUBY_VERSIONS.keys
-            else
-              list
-            end
-          end
-        end
+      @ruby_versions ||= SUPPORTED_RUBY_VERSIONS.keys
     end
 
     def make
@@ -201,7 +266,7 @@ module Gem2Deb
       if ENV['DH_RUBY_USE_DH_AUTO_INSTALL_DESTDIR']
         dh_auto_install_destdir
       else
-        File.join('debian', binary_package.to_s)
+        File.join(build_dir, binary_package.to_s)
       end
     end
 

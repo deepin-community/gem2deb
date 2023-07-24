@@ -2,6 +2,9 @@ unless ENV['ADTTMP']
   $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 end
 
+ENV['DEBFULLNAME'] = 'Debian Developer'
+ENV['DEBEMAIL'] = 'developer@example.com'
+
 if Kernel.const_defined?('SimpleCov')
   SimpleCov.start do
     add_filter %r{/test/}
@@ -200,17 +203,6 @@ class Gem2DebTestCase < Test::Unit::TestCase
   # See above
   def run_command(cmd)
     self.class.run_command(cmd)
-  end
-
-  # Utility method to fake contents in debian/control in the scope of a
-  # test.
-  def debian_control
-    @debian_control ||=
-      begin
-        lines = []
-        File.expects(:readlines).with('debian/control').returns(lines)
-        lines
-      end
   end
 
 end

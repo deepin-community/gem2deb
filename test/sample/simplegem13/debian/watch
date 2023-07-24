@@ -1,5 +1,5 @@
 version=4
-https://gemwatch.debian.net/<%= gem_name %> .*/<%= gem_name %>-(.*).tar.gz
+https://gemwatch.debian.net/simplegem13 .*/simplegem13-(.*).tar.gz
 
 # Use the regex below for github-based sources
 # opts=uversionmangle=s/[_.+-]?(rc|pre|dev|beta|alpha|b|a)/~$1/i,\

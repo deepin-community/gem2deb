@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: <%= gem_name %>
-Upstream-Contact: <%= contact ? contact : 'FIXME'%>/issues
-Source: <%= homepage ? homepage : 'FIXME'%>
+Upstream-Name: simplegem13
+Upstream-Contact: pkg-ruby-extras-maintainers@lists.alioth.debian.org
+Source: https://wiki.debian.org/Teams/Ruby
 
 Files: *
 Copyright: <years> <put author's name and email here>
@@ -9,7 +9,7 @@ Copyright: <years> <put author's name and email here>
 License: Expat (FIXME)
 
 Files: debian/*
-Copyright: <%= Date.today.year %> <%= maintainer['DEBFULLNAME'] %> <<%= maintainer['DEBEMAIL'] %>>
+Copyright: 2022 Antonio Terceiro <terceiro@debian.org>
 License: Expat (FIXME)
 Comment: The Debian packaging is licensed under the same terms as the source.
 

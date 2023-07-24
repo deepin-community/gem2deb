@@ -55,7 +55,7 @@ module Gem2Deb
         end
       end
 
-      data = YAML.load_file(cache)
+      data = ::YAML.load_file(cache)
       unless data.respond_to?(:invert)
         File.unlink(cache)
         puts 'E: Failed to load "gem name to package name" cache from'
@@ -68,8 +68,10 @@ module Gem2Deb
     end
 
     def get_data_from_installed_packages!
-      @data = `dpkg -S /usr/share/rubygems-integration/*/specifications/*`.lines.inject({}) do |memo, line|
+      io = IO.popen("dpkg -S /usr/share/rubygems-integration/*/specifications/*", "r")
+      @data = io.readlines.inject({}) do |memo, line|
         pkg, gemspec = line.strip.split(/:\s+/)
+        pkg.gsub!(/:.*/, '')
         _gem = File.basename(gemspec).sub(/-[0-9.]+\.gemspec$/, '')
         memo[_gem] = pkg
         memo
