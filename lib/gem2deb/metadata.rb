@@ -20,6 +20,7 @@ require 'time'
 require 'yaml'
 
 require 'gem2deb/package_name_mapping'
+require 'gem2deb/yaml'
 
 module Gem2Deb
   class Metadata
@@ -120,7 +121,7 @@ module Gem2Deb
           @gemspec = Gem::Specification.load('debian/gemspec')
         end
       elsif File.exist?('metadata.yml')
-        @gemspec = YAML.load_file('metadata.yml')
+        @gemspec = Gem2Deb::YAML.load_gemspec('metadata.yml')
       elsif ENV['DH_RUBY_GEMSPEC']
         @gemspec = Gem::Specification.load(ENV['DH_RUBY_GEMSPEC'])
       else
@@ -254,7 +255,12 @@ module Gem2Deb
               "<" => "<<",
               "=" => ">=",
             }[op] || op
-            result << ('%s (%s %s)' % [dependency, newop, v])
+            v += "-9999" if newop == "<="
+            if op == "!="
+              result << dependency
+            else
+              result << ('%s (%s %s)' % [dependency, newop, v])
+            end
           end
         end
       end

@@ -1,9 +1,3 @@
-bin/dh-make-ruby /usr/bin/
-bin/dh_ruby /usr/bin/
-bin/dh_ruby_fixdepends /usr/bin/
-bin/dh_ruby_fixdocs /usr/bin/
-bin/gem2deb /usr/bin/
-bin/gem2tgz /usr/bin/ 
-bin/gen-ruby-trans-pkgs /usr/bin/
+bin/* /usr/bin/
 debhelper/* /usr/share/perl5/
-lib/gem2deb/vendor_ruby/* /usr/lib/ruby/vendor_ruby/
+lib/* /usr/lib/ruby/vendor_ruby/

@@ -1,14 +1,82 @@
-gem2deb (1.7-1deepin2) unstable; urgency=medium
+gem2deb (2.1) unstable; urgency=medium
 
-   * update changelog
+  [ Antonio Terceiro ]
+  * dh_ruby: ignore XS-Ruby-Versions
+  * dh_ruby: print a warning if XS-Ruby-Versions is present
+  * metadata: ignore != in dependency specifications
+  * gem2deb: fix check for already downloaded .gem files
+  * dh-make-ruby, gem2deb: drop support for specifying Ruby versions
+    - Command line tools no longer provide a --ruby-versions option
+    - Generated debian/control templates no longer include either
+      XS-Ruby-Versions: or XB-Ruby-Versions:
+  * dh_ruby: drop support for ${ruby:Versions}
+    Packages using ${ruby:Versions} will now produce dpkg warnings during
+    build, since ${ruby:Versions} is no longer defined.
+  * test_helper: set DEBFULLNAME and DEBEMAIL
+  * gem2deb/rake/testtask: don't override task options.
+    This allows downstream users to set t.options.
+  * dh-make-ruby: produce pre-wrapped Depends: field
 
- -- LiChengGang <lichenggang@uniontech.com>  Thu, 23 Mar 2023 13:59:42 +0800
+  [ Helmut Grohne ]
+  * Fix cross building to i386 (Closes: #1018217)
+  * gem_installer: fix cross building (Closes: #1019397)
 
-gem2deb (1.7-1deepin1) unstable; urgency=medium
+ -- Antonio Terceiro <terceiro@debian.org>  Thu, 01 Dec 2022 16:06:44 -0300
 
-  * update install.
+gem2deb (2.0.3) unstable; urgency=medium
 
- -- LiChengGang <lichenggang@uniontech.com>  Thu, 23 Mar 2023 11:22:35 +0800
+  * Gem2Deb::YAML: fix loading more metadata.yml files.
+    I have now tried every metadata.yml in the archive and this should be
+    fixed for good.
+
+ -- Antonio Terceiro <terceiro@debian.org>  Sat, 30 Jul 2022 20:44:54 -0300
+
+gem2deb (2.0.2) unstable; urgency=medium
+
+  * gem installer: exclude doc/* by default
+  * run-from-checkout: fix running from other directories
+  * Gem2Deb::YAML: don't ignore the filename passed
+  * Gem2Deb::YAML: fix loading of gemspecs with aliases
+
+ -- Antonio Terceiro <terceiro@debian.org>  Sat, 30 Jul 2022 10:32:28 -0300
+
+gem2deb (2.0.1) unstable; urgency=medium
+
+  * dh-make-ruby: fix loading package names map
+  * Bump Standards-Version to 4.6.1; no changes needed
+  * dh-make-ruby: bump Standards-Version in template to 4.6.1
+
+ -- Antonio Terceiro <terceiro@debian.org>  Thu, 28 Jul 2022 14:40:44 -0300
+
+gem2deb (2.0) unstable; urgency=medium
+
+  [ Daniel Leidert ]
+  * Use github tags instead of releases in watch file template
+
+  [ Antonio Terceiro ]
+  * dh_ruby: stop printing "dh_ruby --opt"
+  * source_test: replace mocking with temporary directory
+  * Gem2Deb::Source: improve reading of debian/control
+  * Gem2Deb::Source: detect debhelper compatibility level
+  * dh_ruby: build, test and install separately for debhelper compat 14+
+  * Add support for cross compilation of Ruby extensinons (Closes: #982887)
+  * activate.bash: also set PERL5LIB
+  * debian/tests/gem2deb: don't check build dependencies
+  * Gem2Deb::Metadata: fix loading medadata.yml with ruby3.1 (Closes: #1015311)
+
+ -- Antonio Terceiro <terceiro@debian.org>  Thu, 21 Jul 2022 21:17:01 +0200
+
+gem2deb (1.8) unstable; urgency=medium
+
+  [ Antonio Terceiro ]
+  * Gem2Deb::Metadata: handle <= version constraints (Closes: #1000333)
+  * Gem2Deb::PackageNameMapping: strip architecture qualifier off package names
+    (Closes: #1001215)
+
+  [ Daniel Leidert ]
+  * Fix d/copyright template to not repeat '/issues'
+
+ -- Antonio Terceiro <terceiro@debian.org>  Mon, 06 Dec 2021 12:08:12 -0300
 
 gem2deb (1.7) unstable; urgency=medium
 

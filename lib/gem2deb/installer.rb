@@ -24,11 +24,14 @@ module Gem2Deb
       @metadata = Gem2Deb::Metadata.new(@root)
     end
 
-    def install
+    def build
       install_files_and_build_extensions
       update_shebangs
-      install_substvars
       install_gemspec
+    end
+
+    def install
+      install_substvars
       install_changelog
     end
 
@@ -75,15 +78,8 @@ module Gem2Deb
     end
 
     def install_substvars
-      versions =
-        if all_ruby_versions_supported? && !metadata.has_native_extensions?
-          ['all']
-        else
-          ruby_versions
-        end
       dependencies = metadata.get_debian_dependencies(false)
       File.open("debian/#{binary_package}.substvars", "a") do |fd|
-        fd.puts "ruby:Versions=#{versions.join(' ')}"
         fd.puts "ruby:Depends=#{dependencies.join(', ')}"
       end
     end
